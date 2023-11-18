@@ -129,8 +129,12 @@ cards = [
 	Card("rev", (250, 192, 32), "rev", None),
 	
     # Wild Cards
-    Card("cc", (0, 0, 0), "cc", "cc"),
-    Card("cc", (0, 0, 0), "cc", "cc"),
-    Card("p4", (0, 0, 0), "p4", "p4"),
-    Card("p4", (0, 0, 0), "p4", "p4"),
+    Card("cc", (0, 0, 0), None, "cc"),
+    Card("cc", (0, 0, 0), None, "cc"),
+    Card("cc", (0, 0, 0), None, "cc"),
+    Card("cc", (0, 0, 0), None, "cc"),
+    Card("p4", (0, 0, 0), None, "d4"),
+    Card("p4", (0, 0, 0), None, "d4"),
+    Card("p4", (0, 0, 0), None, "d4"),
+    Card("p4", (0, 0, 0), None, "d4"),
 ]

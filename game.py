@@ -49,6 +49,7 @@ class Game:
 			"""
 			In case the move has an ability, the turn is retained. No need to switch turns.
 			"""
+			print("Move Ability")
 
 			if move.ability == "d2":
 				if player == 0:
@@ -62,7 +63,23 @@ class Game:
 				self.numCardsAssigned += 2
 
 			# Other abilities simply retain the turn. No need for special checking
+		elif move.wild != None:
+			print("Wild Card!")
+			if move.wild == "cc":
+				print("Wild Change Card")
+			if move.wild == "p4":
+				if player == 0:
+					self.p2Cards.append(self.deck[self.numCardsAssigned])
+					self.p2Cards.append(self.deck[self.numCardsAssigned + 3])
 
+				else:
+					self.p1Cards.append(self.deck[self.numCardsAssigned])
+					self.p1Cards.append(self.deck[self.numCardsAssigned + 3])
+				
+				self.numCardsAssigned += 4
+				print("Wild Plus 4")
+    
+			self.turn = (player) % 2
 		else:
 			self.turn = (player + 1) % 2
 

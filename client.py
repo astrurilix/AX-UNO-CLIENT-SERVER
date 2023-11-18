@@ -1,12 +1,11 @@
-import pygame # All the front end
-import time # For delay, sleep, etc
-from sys import exit # for exit()
+import pygame
+import time
+from sys import exit
 
 
 from Cards import Card, cards
-from network import Network # Custom network class
-from multiprocessing.connection import Client # Multiprocessing client
-
+from network import Network
+from multiprocessing.connection import Client
 
 pygame.init()
 
@@ -16,6 +15,10 @@ window = pygame.display.set_mode((width, height))
 pygame.display.set_caption("UNO Client")
 
 class Button:
+    """
+    INITIALIZATION
+    
+    """
     def __init__(self, text, color, x, y):
         self.text = text
         self.color = color
@@ -23,46 +26,82 @@ class Button:
         self.y = y
         self.width = 150
         self.height = 80
-
+    
+    """
+    DRAW
+    
+    Draw button on the screen
+    1. Draw Rectangle with color and sixe
+    2. Create pygame.font.Sysfont object
+    3. Will be drawn on screen
+    
+    """
     def draw(self, win):
         pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.height))
         font = pygame.font.SysFont("Merriweather", 40)
         text = font.render(str(self.text), 1, (255,255,255))
         win.blit(text, (self.x + round(self.width/2) - round(text.get_width()/2), self.y + round(self.height/2) - round(text.get_height()/2)))
 
+    def remove(self, win):
+        pygame.draw.rect(win, (255,255,255), (self.x, self.y, self.width, self.height))
+    """
+    CLICK
+    
+    Check if button was clicked. It takes a position anc
+    checks if it's within button's rectangle
+    """
     def click(self, pos):
+        print(self.text)
         x1 = pos[0]
         y1 = pos[1]
         if self.x <= x1 <= self.x + self.width and self.y <= y1 <= self.y + self.height:
             return True
         else:
             return False
-
-# Basically a button, just based on a card instead of on text and color
+    
 class OnScreenCard(Button):
 
     def __init__(self, card: Card, x, y):
         self.card = card
         self.color = card.color
+        self.ability = card.ability
+        self.wild = card.wild
         self.text = str(card.number)
         self.x = x
         self.y = y
         self.width = 60
         self.height = 110
 
+#  list is presumably used to store all OnScreenCard objects
 onScreenCards = list()
+"""
+The drawButton and endTurnButton are instances of the Button class. They represent buttons that the player can click to draw a card or end their turn. The text, color, and position of each button are specified when they are created. The color is specified as an RGB tuple, and the position is specified as x and y coordinates. The size of these buttons is set to the default 
+size specified in the Button class, which is 150x80 pixels.
+"""
+ChangeRed     = Button("Red", (255, 0, 0), 200, 700)
+ChangeBlue    = Button("Blue", (0, 0, 255), 400, 700)
+ChangeGreen   = Button("Green", (0, 255, 0), 200, 800)
+ChangeYellow  = Button("Yellow", (250, 192, 32), 400, 800)
+
 drawButton    = Button("Draw 1", (242, 51, 150), 500, 350)
 endTurnButton = Button("End Turn", (242, 51, 150), 500, 450)
 
+"""
+WINDOW CLEARING
+
+Clears the window by filling it with white color
+"""
 def redrawWindow(win, game, player):
-    """
-    Redraws pygame window based on the current state of the game
-    """
 
     global onScreenCards
 
     win.fill((255,255,255))
-
+    """
+    WAITING FOR PLAYER
+    
+    If game has not been connected, it displays a "Waiting For Player" Message
+    
+    """
     if not(game.connected()):
         font = pygame.font.SysFont("comicsans", 80)
         text = font.render("Waiting for Player...", 1, (255,0,0), True)
@@ -71,18 +110,26 @@ def redrawWindow(win, game, player):
 
     else:
 
-        # Draw topmost card on screen
         topCard = OnScreenCard(game.lastMove, 300, 500)
         topCard.draw(win)
 
-        # Draw the "Draw 1" button on screen
         drawButton.draw(win)
 
-        # Draw the "End turn" button on screen
         endTurnButton.draw(win)
 
+        if topCard.wild != None:
+            if game.turn == player:
+                ChangeRed.draw(win)
+                ChangeBlue.draw(win)
+                ChangeGreen.draw(win)
+                ChangeYellow.draw(win)
+        else:
+            ChangeRed.remove(win)
+            ChangeBlue.remove(win)
+            ChangeGreen.remove(win)
+            ChangeYellow.remove(win)
+
         if game.turn == player:
-            # Player's turn turn
             font = pygame.font.SysFont("comicsans", 60)
             text = font.render("Your Move", 1, (0, 255,255))
             win.blit(text, (50, 50))
@@ -93,7 +140,6 @@ def redrawWindow(win, game, player):
             text = font.render("Opponent\'s Move", 1, (0, 255,255))
             win.blit(text, (50, 50))
 
-        # Draw all cards
         XPosition = 50
         YPosition = 200
 
@@ -117,10 +163,7 @@ def redrawWindow(win, game, player):
 
 
 def checkMove(move: Card, game) -> bool:
-    """
-    Checks if the player's move was valid and returns a bool
-    @Return: Bool indicating whether or not the move was valid.
-    """
+
     lastMove = game.lastMove
 
     if move.number == lastMove.number:
@@ -159,7 +202,6 @@ def main():
                 run = False
                 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                # Only handle this event if the player is on turn.
                 if game.turn == player:
                     pos = pygame.mouse.get_pos()
 
@@ -173,7 +215,6 @@ def main():
                         if drawnCard.click(pos) and game.connected():
                             if checkMove(drawnCard.card, game):
                                 try:
-                                    # Send move
                                     n.send("move", "C")
                                     n.send(drawnCard.card, "M")
 
