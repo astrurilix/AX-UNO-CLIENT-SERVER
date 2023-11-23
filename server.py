@@ -19,7 +19,7 @@ When started, this will read server_connection.txt file
 and get the network needed to start the server.
 
 | Current Network Configuration:
-| IP	 : 192.168.0.111
+| IP	 : 10.41.3.165
 | PORT : 7723
 
 """
@@ -147,6 +147,35 @@ def client_thread(conn, p, gameId, games):
 						games[gameId] = game
 						reply = game
 						conn.send(reply)
+					
+					if data == "crp4":
+						reply = game.changeCardColor('p4', 'red')
+						conn.send(reply)
+					if data == "crcc":
+						reply = game.changeCardColor('cc', 'red')
+						conn.send(reply)
+					
+					if data == "cgp4":
+						reply = game.changeCardColor('p4', 'green')
+						conn.send(reply)
+					if data == "cgcc":
+						reply = game.changeCardColor('cc', 'green')
+						conn.send(reply)
+					
+					if data == "cbp4":
+						reply = game.changeCardColor('p4', 'blue')
+						conn.send(reply)
+					if data == "cbcc":
+						reply = game.changeCardColor('cc', 'blue')
+						conn.send(reply)
+					
+					if data == "cyp4":
+						reply = game.changeCardColor('p4', 'yellow')
+						conn.send(reply)
+					if data == "cycc":
+						reply = game.changeCardColor('cc', 'yellow')
+						conn.send(reply)
+						
 					"""
      				> END
 					Calls endTurn method of Game object

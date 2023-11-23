@@ -133,8 +133,20 @@ cards = [
     Card("cc", (0, 0, 0), None, "cc"),
     Card("cc", (0, 0, 0), None, "cc"),
     Card("cc", (0, 0, 0), None, "cc"),
-    Card("p4", (0, 0, 0), None, "d4"),
-    Card("p4", (0, 0, 0), None, "d4"),
-    Card("p4", (0, 0, 0), None, "d4"),
-    Card("p4", (0, 0, 0), None, "d4"),
+    Card("p4", (0, 0, 0), None, "p4"),
+    Card("p4", (0, 0, 0), None, "p4"),
+    Card("p4", (0, 0, 0), None, "p4"),
+    Card("p4", (0, 0, 0), None, "p4"),
+]
+
+wilds = [
+    Card("p4", (255, 0, 0), None, None),
+    Card("cc", (255, 0, 0), None, None),
+    Card("p4", (0, 255, 0), None, None),
+    Card("cc", (0, 255, 0), None, None),
+    Card("p4", (0, 0, 255), None, None),
+    Card("cc", (0, 0, 255), None, None),
+    Card("p4", (250, 192, 32), None, None),
+    Card("cc", (250, 192, 32), None, None),
+
 ]

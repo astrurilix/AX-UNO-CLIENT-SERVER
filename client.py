@@ -14,6 +14,9 @@ height = 1000
 window = pygame.display.set_mode((width, height))
 pygame.display.set_caption("UNO Client")
 
+enableChangeColor = False
+ChangeColorClicked = False
+
 class Button:
     """
     INITIALIZATION
@@ -51,7 +54,6 @@ class Button:
     checks if it's within button's rectangle
     """
     def click(self, pos):
-        print(self.text)
         x1 = pos[0]
         y1 = pos[1]
         if self.x <= x1 <= self.x + self.width and self.y <= y1 <= self.y + self.height:
@@ -94,6 +96,7 @@ Clears the window by filling it with white color
 def redrawWindow(win, game, player):
 
     global onScreenCards
+    global enableChangeColor
 
     win.fill((255,255,255))
     """
@@ -119,15 +122,24 @@ def redrawWindow(win, game, player):
 
         if topCard.wild != None:
             if game.turn == player:
+                enableChangeColor = True
                 ChangeRed.draw(win)
                 ChangeBlue.draw(win)
                 ChangeGreen.draw(win)
                 ChangeYellow.draw(win)
+            else:
+                enableChangeColor = False
+                ChangeRed.remove(win)
+                ChangeBlue.remove(win)
+                ChangeGreen.remove(win)
+                ChangeYellow.remove(win)
         else:
+            enableChangeColor = False
             ChangeRed.remove(win)
             ChangeBlue.remove(win)
             ChangeGreen.remove(win)
             ChangeYellow.remove(win)
+
 
         if game.turn == player:
             font = pygame.font.SysFont("comicsans", 60)
@@ -180,6 +192,8 @@ def checkMove(move: Card, game) -> bool:
 
 def main():
     run = True
+    global enableChangeColor
+    global ChangeColorClicked
     global onScreenCards
 
     clock = pygame.time.Clock()
@@ -210,6 +224,42 @@ def main():
 
                     if endTurnButton.click(pos) and game.connected():
                         game = n.send("end", "C")
+
+                    if game.lastMove.wild is not None:
+                        if game.lastMove.wild == 'CC':
+                            if ChangeRed.click(pos) and game.connected():
+                                ChangeColorClicked = True
+                                action = n.send("crcc", "C")
+                            if ChangeGreen.click(pos) and game.connected():
+                                ChangeColorClicked = True
+                                action = n.send("cgcc", "C")
+                            if ChangeBlue.click(pos) and game.connected():
+                                ChangeColorClicked = True
+                                action = n.send("cbcc", "C")
+                            if ChangeYellow.click(pos) and game.connected():
+                                ChangeColorClicked = True
+                                action = n.send("cycc", "C")
+                        else:
+                            if ChangeRed.click(pos) and game.connected():
+                                ChangeColorClicked = True
+                                action = n.send("crp4", "C")
+                            if ChangeGreen.click(pos) and game.connected():
+                                ChangeColorClicked = True
+                                action = n.send("cgp4", "C")
+                            if ChangeBlue.click(pos) and game.connected():
+                                ChangeColorClicked = True
+                                action = n.send("cbp4", "C")
+                            if ChangeYellow.click(pos) and game.connected():
+                                ChangeColorClicked = True
+                                action = n.send("cyp4", "C")
+
+                    if ChangeColorClicked and enableChangeColor:
+                        ChangeColorClicked = False
+                        enableChangeColor = False
+                        ChangeRed.remove(window)
+                        ChangeBlue.remove(window)
+                        ChangeGreen.remove(window)
+                        ChangeYellow.remove(window)
 
                     for drawnCard in onScreenCards:
                         if drawnCard.click(pos) and game.connected():

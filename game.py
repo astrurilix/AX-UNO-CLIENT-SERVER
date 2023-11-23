@@ -1,4 +1,4 @@
-from Cards import Card, cards
+from Cards import Card, cards, wilds
 import random
 
 class Game:
@@ -32,6 +32,16 @@ class Game:
     	# Two players
 		self.wins = [0,0]
 
+		# Get Wild Card IDs
+		self.p4Red  = wilds[0]
+		self.ccRed = wilds[1]
+		self.p4Green = wilds[2]
+		self.ccGreen = wilds[3]
+		self.p4Blue = wilds[4]
+		self.ccBlue = wilds[5]
+		self.p4Yellow = wilds[6]
+		self.ccYellow = wilds[7]
+
 	def getLastMove(self):
 		return self.lastMove
 
@@ -49,8 +59,6 @@ class Game:
 			"""
 			In case the move has an ability, the turn is retained. No need to switch turns.
 			"""
-			print("Move Ability")
-
 			if move.ability == "d2":
 				if player == 0:
 					self.p2Cards.append(self.deck[self.numCardsAssigned])
@@ -64,9 +72,6 @@ class Game:
 
 			# Other abilities simply retain the turn. No need for special checking
 		elif move.wild != None:
-			print("Wild Card!")
-			if move.wild == "cc":
-				print("Wild Change Card")
 			if move.wild == "p4":
 				if player == 0:
 					self.p2Cards.append(self.deck[self.numCardsAssigned])
@@ -77,7 +82,6 @@ class Game:
 					self.p1Cards.append(self.deck[self.numCardsAssigned + 3])
 				
 				self.numCardsAssigned += 4
-				print("Wild Plus 4")
     
 			self.turn = (player) % 2
 		else:
@@ -96,6 +100,30 @@ class Game:
 
 		self.lastMove = move
 		
+	def changeCardColor(self, type, color):
+		# Split into Type
+		result = None
+		if type=="cc":
+			if color == "red":
+				result = self.ccRed
+			if color == "green":
+				result = self.ccGreen
+			if color == "blue":
+				result = self.ccBlue
+			if color == "yellow":
+				result = self.ccYellow
+		if type=="p4":
+			if color == "red":
+				result = self.p4Red
+			if color == "green":
+				result = self.p4Green
+			if color == "blue":
+				result = self.p4Blue
+			if color == "yellow":
+				result = self.p4Yellow
+		self.lastMove = result
+		return result
+	
 
 	def connected(self):
 		return self.ready
