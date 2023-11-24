@@ -148,6 +148,20 @@ def client_thread(conn, p, gameId, games):
 						reply = game
 						conn.send(reply)
 					
+					"""
+					> CXYY
+					Change Color to be X, then the card type to be
+					on the lY.
+					X -> R  Red
+					     G  Green
+						 B  Blue
+						 Y  Yellow
+
+					YY-> CC Change Color
+						 P4 Plus 4
+					"""
+
+
 					if data == "crp4":
 						reply = game.changeCardColor('p4', 'red')
 						conn.send(reply)

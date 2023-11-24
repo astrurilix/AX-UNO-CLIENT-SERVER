@@ -75,15 +75,19 @@ class Game:
 			if move.wild == "p4":
 				if player == 0:
 					self.p2Cards.append(self.deck[self.numCardsAssigned])
+					self.p2Cards.append(self.deck[self.numCardsAssigned + 1])
+					self.p2Cards.append(self.deck[self.numCardsAssigned + 2])
 					self.p2Cards.append(self.deck[self.numCardsAssigned + 3])
 
 				else:
 					self.p1Cards.append(self.deck[self.numCardsAssigned])
+					self.p1Cards.append(self.deck[self.numCardsAssigned + 1])
+					self.p1Cards.append(self.deck[self.numCardsAssigned + 2])
 					self.p1Cards.append(self.deck[self.numCardsAssigned + 3])
 				
 				self.numCardsAssigned += 4
     
-			self.turn = (player) % 2
+				self.turn = (player) % 2
 		else:
 			self.turn = (player + 1) % 2
 
