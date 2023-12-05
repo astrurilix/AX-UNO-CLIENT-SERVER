@@ -42,11 +42,26 @@ class Game:
 		self.p4Yellow = wilds[6]
 		self.ccYellow = wilds[7]
 
+		self.resetTimer = 0
+
 	def getLastMove(self):
 		return self.lastMove
 
 	def endTurn(self):
 		self.turn = (self.turn + 1) % 2
+
+	def check_winner(self):
+		if len(self.p1Cards) == 0:
+			self.wins[0] += 1
+			return 0 # Player 1 wins
+		elif len(self.p2Cards) == 0:
+			self.wins[1] += 1
+			return 1 # Player 2 wins
+		else:
+			return None # No winner yet	
+			
+	def setWinner(self):
+		self.wins[0] += 1
 
 	def play(self, player, move: Card):
 		"""
@@ -103,6 +118,12 @@ class Game:
 			print("ran into error while playing move")
 
 		self.lastMove = move
+
+		# Check for a winner after each move 
+		winner = self.check_winner()
+		if winner is not None:
+			self.reset() # Reset the game if there is a winner
+			return
 		
 	def changeCardColor(self, type, color):
 		# Split into Type
@@ -145,6 +166,21 @@ class Game:
 				return index
 
 		return None
+	
+	def reset(self):
+		if self.resetTimer == 25:
+			self.turn = 0 
+			self.ready = True
+			self.deck = cards
+			random.shuffle(self.deck)
+			self.p1Cards = self.deck[0:7]
+			self.p2Cards = self.deck[7:14]
+			self.lastMove = self.deck[14]
+			self.numCardsAssigned = 15
+			self.resetTimer = 0
+		else :
+			self.resetTimer += 1
+		print("reset")
 
 	def draw(self, player):
 		"""

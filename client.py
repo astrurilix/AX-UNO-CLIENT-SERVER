@@ -147,7 +147,6 @@ def redrawWindow(win, game, player):
             win.blit(text, (50, 50))
 
         else:
-
             font = pygame.font.SysFont("comicsans", 60)
             text = font.render("Opponent\'s Move", 1, (0, 255,255))
             win.blit(text, (50, 50))
@@ -172,7 +171,13 @@ def redrawWindow(win, game, player):
 
 
     pygame.display.update()
+    
 
+def displayWinner(win, winner):
+    font = pygame.font.SysFont("comicsans", 80)
+    text = font.render(f"Player {winner} Wins!", 1, (0, 255, 0), True)
+    win.blit(text, (int(width/2 - text.get_width()/2), int(height/2 - text.get_height()/2)))
+    pygame.display.update()
 
 def checkMove(move: Card, game) -> bool:
 
@@ -208,6 +213,14 @@ def main():
             run = False
             print("Connection lost.")
             break
+
+        # Check for a winner 
+        winner = game.check_winner()
+
+        if winner is not None:
+            displayWinner(window, winner + 1) # Add 1 to convert player number to player index
+            # Reset the game (you may need to modify the reset logic based on your game structure)
+            n.send("reset", "C") # Assuming you have a reset method in your Game class
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -274,5 +287,8 @@ def main():
 
         clock.tick(10)
         redrawWindow(window, game, player)
+
+    pygame.quit()
+    exit()
 
 main()

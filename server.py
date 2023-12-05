@@ -1,6 +1,10 @@
 """
 server.py
 Server for AX-UNO
+by:
+
+Kenly Krisaguino Santoso / 21.K1.0017
+Soen Anita Sanjaya / 21.K1.0012
 """
 
 # Importing Nexessary Modules
@@ -19,7 +23,7 @@ When started, this will read server_connection.txt file
 and get the network needed to start the server.
 
 | Current Network Configuration:
-| IP	 : 10.41.3.165
+| IP	 : 192.168.1.5
 | PORT : 7723
 
 """
@@ -61,6 +65,14 @@ It will update the game states; send the game state
 to client or end the game
 """
 
+# def check_winner_and_reset(game, gameId, games):
+# 	winner  = game.check_winner()
+# 	if winner is not None:
+# 		print(f"Player {winner + 1} wins in game {gameId}")
+# 		del games[gameId]
+# 		return True
+# 	return False
+
 def client_thread(conn, p, gameId, games):
 
 	global idCount
@@ -86,7 +98,7 @@ def client_thread(conn, p, gameId, games):
    			GAME EXISTENCE CHECK
 
 			Server will check if a gameid is
-			avalaiable in games dictionary.
+			avaliable in games dictionary.
 
 			If not, it will print message and 
     		  break the loop
@@ -203,6 +215,14 @@ def client_thread(conn, p, gameId, games):
 
 						conn.send(game)
 
+					if data == "reset":
+						game.reset()
+
+						conn.send(game)
+
+					# if check_winner_and_reset(game, gameId, games):
+					# 	break
+
 			else:
 				print("No game ID found.")
 				break
@@ -210,6 +230,14 @@ def client_thread(conn, p, gameId, games):
 		except:
 			print("error")
 			break
+
+	try:
+		del games[gameId]
+	except:
+		pass
+	idCount -= 1
+	conn.close()
+
 	"""
 	GAME DELETION
  

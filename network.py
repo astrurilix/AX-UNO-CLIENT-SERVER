@@ -13,7 +13,7 @@ class Network:
 	"""
 	def __init__(self):
 		# self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.server = '10.41.1.47'
+		self.server = '10.42.0.107'
 		self.port = 7723
 		self.client = Client((self.server, self.port))
 		self.addr = (self.server, self.port)
