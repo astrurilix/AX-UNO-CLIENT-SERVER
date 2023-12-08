@@ -23,11 +23,11 @@ When started, this will read server_connection.txt file
 and get the network needed to start the server.
 
 | Current Network Configuration:
-| IP	 : 192.168.1.5
+| IP	 : 192.168.50.83
 | PORT : 7723
 
 """
-with open('server_connection.txt') as f:
+with open('D:\CSC\AX-UNO-CLIENT-SERVER-main\AX-UNO-CLIENT-SERVER-main\AX-UNO-CLIENT-SERVER-main\server_connection.txt') as f:
     contents = f.read()
 
 ip, port = contents.split("\n")
@@ -222,6 +222,28 @@ def client_thread(conn, p, gameId, games):
 
 					# if check_winner_and_reset(game, gameId, games):
 					# 	break
+
+					if data == "UNOfail1":
+						# Call UNO Fail! method in game object
+						game.uno_fail(0)
+
+						# Update the game in the games dictionary
+						games[gameId] = game
+
+						# Send the updated game state back to the client
+						reply = game
+						conn.send(reply)
+
+					if data == "UNOfail2":
+						# Call UNO Fail! method in game object
+						game.uno_fail(1)
+
+						# Update the game in the games dictionary
+						games[gameId] = game
+
+						# Send the updated game state back to the client
+						reply = game
+						conn.send(reply)
 
 			else:
 				print("No game ID found.")
