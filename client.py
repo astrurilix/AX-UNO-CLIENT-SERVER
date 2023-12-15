@@ -113,7 +113,17 @@ def redrawWindow(win, game, player):
         win.blit(text, (int(width/2 - text.get_width()/2), int(height/2 - text.get_height()/2)))
 
     else:
+        # Menampilkan Kartu Musuh
+        if player % 2 == 0:
+            numcard = len(game.p2Cards)
+        else:
+            numcard = len(game.p1Cards)
+        font = pygame.font.SysFont("comicsans", 24)
 
+        text = font.render("Kartu Lawan: " + str(numcard), 1, (255,0,0), False)
+
+        win.blit(text, (800, 50))
+        
         topCard = OnScreenCard(game.lastMove, 300, 500)
         topCard.draw(win)
 
