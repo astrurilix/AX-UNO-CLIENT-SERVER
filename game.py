@@ -1,5 +1,5 @@
 from Cards import Card, cards, wilds
-import random
+import random, time
 
 class Game:
 
@@ -18,27 +18,16 @@ class Game:
 		random.shuffle(self.deck)
 
     	# player 1 cards
-		self.p1Cards = self.deck[0:3]
+		self.p1Cards = self.deck[0:7]
 
     	# player 2 cards
-		self.p2Cards = self.deck[4:7]
+		self.p2Cards = self.deck[7:14]
 
     	# In UNO only the last move matters
-		self.lastMove = self.deck[8]
+		self.lastMove = self.deck[14]
 
     	# 7 distributed to each player + 1 on top of pile
-		self.numCardsAssigned = 9
-    	# # player 1 cards
-		# self.p1Cards = self.deck[0:7]
-
-    	# # player 2 cards
-		# self.p2Cards = self.deck[7:14]
-
-    	# # In UNO only the last move matters
-		# self.lastMove = self.deck[14]
-
-    	# # 7 distributed to each player + 1 on top of pile
-		# self.numCardsAssigned = 15 
+		self.numCardsAssigned = 15 
 
     	# Two players
 		self.wins = [0,0]
@@ -55,15 +44,14 @@ class Game:
 
 		self.resetTimer = 0
 
+		self.currentTime = time.time()
+		self.UNOstate = [False, False]
+		self.UNOtimer = [0, 0]
+		self.lastCardCount = [len(self.p1Cards), len(self.p2Cards)]
+
 	def getLastMove(self):
 		return self.lastMove
 
-	def getP1Cards(self):
-		return self.p1Cards
-	
-	def getP2Cards(self):
-		return self.p2Cards
-	
 	def endTurn(self):
 		self.turn = (self.turn + 1) % 2
 
@@ -86,6 +74,11 @@ class Game:
 
 		No error checking in this function. Implement before.
 		"""
+
+		if player == 0:
+			self.lastCardCount[0] = len(self.p1Cards)
+		else:
+			self.lastCardCount[1] = len(self.p2Cards)
 
 		if move.ability != None:
 			"""
@@ -141,16 +134,6 @@ class Game:
 		if winner is not None:
 			self.reset() # Reset the game if there is a winner
 			return
-	
-	def uno_fail(self, player):
-		if player == 0:
-			self.p1Cards.append(self.deck[self.numCardsAssigned])
-			self.p1Cards.append(self.deck[self.numCardsAssigned + 1])
-			self.numCardsAssigned +=2
-		else:
-			self.p2Cards.append(self.deck[self.numCardsAssigned])
-			self.p2Cards.append(self.deck[self.numCardsAssigned + 1])
-			self.numCardsAssigned +=2
 		
 	def changeCardColor(self, type, color):
 		# Split into Type
@@ -205,6 +188,9 @@ class Game:
 			self.lastMove = self.deck[14]
 			self.numCardsAssigned = 15
 			self.resetTimer = 0
+			self.UNOstate = [False, False]
+			self.UNOtimer = [0, 0]
+			self.lastCardCount = [len(self.p1Cards), len(self.p2Cards)]
 		else :
 			self.resetTimer += 1
 		print("reset")
@@ -222,3 +208,42 @@ class Game:
 			self.p2Cards.append(self.deck[self.numCardsAssigned])
 
 		self.numCardsAssigned += 1
+	
+	def updateCurrentTime(self):
+		self.currentTime = time.time()
+
+	def uno_fail(self, player):
+		if player % 2 == 0:
+			self.p1Cards.append(self.deck[self.numCardsAssigned])
+			self.p1Cards.append(self.deck[self.numCardsAssigned + 1])
+			self.numCardsAssigned += 2
+		else:
+			self.p2Cards.append(self.deck[self.numCardsAssigned])
+			self.p2Cards.append(self.deck[self.numCardsAssigned + 1])
+			self.numCardsAssigned += 2
+
+	def checkUnoTimer(self):
+		print(len(self.p1Cards))
+		print(len(self.p2Cards))
+		print(self.lastCardCount)
+		for i in range(2):
+			if i % 2 == 0:
+				if len(self.p1Cards) == 1 and self.lastCardCount[i] == 2:
+					print("UNO STATE DETECTED!")
+					self.lastCardCount[i] = 1
+					self.UNOstate[i] = True
+					self.UNOtimer[i] = time.time()
+			else:
+				if len(self.p2Cards) == 1 and self.lastCardCount[i] == 2:
+					self.lastCardCount[i] = 1
+					self.UNOstate[i] = True
+					self.UNOtimer[i] = time.time()
+			
+			if self.UNOstate[i]:
+				if self.currentTime - self.UNOtimer[i] >= 5:
+					self.uno_fail(i)
+					self.UNOstate[i] = False
+					self.UNOtimer[i] = 0
+
+	def stopUNOtimer(self, player):
+		self.UNOstate[player%2] = False

@@ -113,18 +113,6 @@ def redrawWindow(win, game, player):
         win.blit(text, (int(width/2 - text.get_width()/2), int(height/2 - text.get_height()/2)))
 
     else:
-        # Menampilkan Kartu Musuh
-        if player % 2 == 0:
-            numcard = len(game.getP2Cards())
-        else:
-            numcard = len(game.getP1Cards())
-        font = pygame.font.SysFont("comicsans", 24)
-
-        text = font.render("Kartu Lawan: " + str(numcard), 1, (255,0,0), False)
-
-        win.blit(text, (800, 50))
-
-        # ================
 
         topCard = OnScreenCard(game.lastMove, 300, 500)
         topCard.draw(win)
@@ -209,7 +197,7 @@ def checkMove(move: Card, game) -> bool:
     elif move.wild: 
         return True
 
-    return False   
+    return False
 
 
 def main():
@@ -222,11 +210,6 @@ def main():
     n = Network()
     player = n.getPlayerNumber()
     pygame.time.delay(50)
-
-    uno_button_pressed = [False, False]
-    check_uno_status = [False, False]
-    uno_fail_timer = [False, False]
-    timer_start_time = [None, None]
     
     while run:
         try:
@@ -251,21 +234,16 @@ def main():
                 run = False
                 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                
                 pos = pygame.mouse.get_pos()
-                # When the "UNO!" button is clicked, reset the "UNO Fail!" timer
-                if unoButton.click(pos):
-                    uno_button_pressed[player%2] = True
+
+                if unoButton.click(pos) and game.connected():
+                    if player % 2 == 0:
+                        n.send("unop1", "C")
+                    else:
+                        n.send("unop2", "C")
                     print("UNO PRESSED")
 
-
                 if game.turn == player:
-
-                    # When the "Draw 1" button is clicked, start the timer
-                    if drawButton.click(pos) and game.connected():
-                        draw_button_timer_start = time.time()
-
-
                     if drawButton.click(pos) and game.connected():
                         game = n.send("draw", "C")
 
@@ -319,40 +297,6 @@ def main():
                                     print("EOF recd.")
                                     pass
 
-        # Explain to me this part
-
-        if len(game.p1Cards) < 2:
-            check_uno_status[0] = True
-        elif uno_button_pressed[0]:
-            check_uno_status[0] = False
-
-        if len(game.p2Cards) < 2:
-            check_uno_status[1] = True
-        elif uno_button_pressed[1]:
-            check_uno_status[1] = False
-
-
-        for i in check_uno_status:
-            if check_uno_status[i]:
-                if not uno_fail_timer[i]:
-                    uno_fail_timer[i] = True
-                    timer_start_time[i] = time.time()
-                elif time.time() - timer_start_time[i] >= 5:
-                    check_uno_status[i] = False
-                    uno_fail_timer[i] = False
-                    timer_start_time = [None, None]
-                    if i == 0:
-                        n.send("UNOfail1", "C")
-                    else:
-                        n.send("UNOfail2", "C")
-            else:
-                if check_uno_status[i]:
-                    check_uno_status[i] = False
-                elif uno_button_pressed[i]:
-                    check_uno_status[i] = True
-
-        # Until This Part
-            print(timer_start_time)
         clock.tick(10)
         redrawWindow(window, game, player)
 
